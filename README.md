@@ -2,6 +2,12 @@
 
 **Movie-App** é um site para explorar filmes, séries e atores. Os usuários podem criar uma conta, fazer login, pesquisar filmes e séries, e adicionar itens à sua watchlist pessoal.
 
+## 🌐 Acesse o Site em Produção
+
+O site está disponível no link abaixo:  
+[🔗 Acesse o site](https://movie-app-delta-tan.vercel.app/)
+
+
 ## Funcionalidades
 
 - **Cadastro e Login de Usuários**: Crie uma conta ou faça login para acessar suas funcionalidades personalizadas.
