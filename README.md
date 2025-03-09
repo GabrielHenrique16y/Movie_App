@@ -46,8 +46,8 @@ Para mais informações sobre os endpoints, consulte a [documentação da API do
 1. Clone o repositório:
 
     ```sh
-   git clone https://github.com/GabrielHenrique16y/Movie-app.git
-   cd Movie-app
+   git clone https://github.com/GabrielHenrique16y/Movie_app.git
+   cd Movie_app
     ```
 
 2. Instale as dependências:
