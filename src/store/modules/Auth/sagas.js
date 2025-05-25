@@ -24,8 +24,16 @@ function* loginRequest({ payload }) {
         }
 
         const { token, user } = response.data;
-        Cookies.set('token', token, { expires: 7, secure: true, sameSite: 'Strict' });
-        Cookies.set('user', JSON.stringify(user), { expires: 7, secure: true, sameSite: 'Strict' });
+        Cookies.set('token', token, {
+            expires: 7,
+            secure: true,
+            sameSite: 'Strict',
+        });
+        Cookies.set('user', JSON.stringify(user), {
+            expires: 7,
+            secure: true,
+            sameSite: 'Strict',
+        });
 
         yield put(actions.login_success());
 
@@ -52,14 +60,15 @@ function persistRehydrate() {
 }
 
 function* registerRequest({ payload }) {
-    const { nome, email, password, navigate } = payload;
+    const { nome, email, password, isPublic, navigate } = payload; // Renomeando 'public' para 'isPublic'
 
     const userCookie = Cookies.get('user');
-
     const user = userCookie ? JSON.parse(userCookie) : null;
     const token = Cookies.get('token');
 
     try {
+        const publicValue = isPublic ? 'TRUE' : 'FALSE'; 
+
         if (user?.id) {
             yield call(
                 axiosAuth.put,
@@ -68,6 +77,7 @@ function* registerRequest({ payload }) {
                     name: nome,
                     email,
                     password: password || undefined,
+                    public: publicValue,
                 },
                 {
                     withCredentials: true,
@@ -87,6 +97,7 @@ function* registerRequest({ payload }) {
                 name: nome,
                 email,
                 password: password || undefined,
+                public: false,
             });
             toast.success('Conta criada com sucesso!');
             yield put(

@@ -3,9 +3,11 @@ import axiosAuth from '../../services/axiosAuth';
 import axios from '../../services/axios';
 import { toast } from 'react-toastify';
 import { Container, List, ListItem, Title } from './styled';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { IoStar } from 'react-icons/io5';
 import Loading from '../../components/Loading';
+import Cookies from 'js-cookie';
+import { get } from 'lodash';
 
 export default function WatchList() {
     const [databaseMovies, setDatabaseMovies] = useState([]);
@@ -14,22 +16,56 @@ export default function WatchList() {
     const [serieImages, setSerieImages] = useState({});
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
+    const userCookie = Cookies.get('user');
+
+    const user = userCookie ? JSON.parse(userCookie) : null;
+    const { name } = useParams();
 
     useEffect(() => {
         const getData = async () => {
             try {
-                setIsLoading(true);
-                const response = await axiosAuth.get('/movies/');
-                const responseSerie = await axiosAuth.get('/series/');
-                setIsLoading(false);
-                setDatabaseMovies(response.data);
-                setDatabaseSeries(responseSerie.data);
+                if (!name) {
+                    setIsLoading(true);
+                    const responseMovie = await axiosAuth.get(
+                        `/movies/${user.id}`,
+                    );
+                    const responseSerie = await axiosAuth.get(
+                        `/series/${user.id}`,
+                    );
+                    setIsLoading(false);
+                    setDatabaseMovies(responseMovie.data);
+                    setDatabaseSeries(responseSerie.data);
+                } else {
+                    setIsLoading(true);
+                    const responseUser = await axiosAuth.get(
+                        `users/searchByName/${name}`,
+                    );
+                    const isPublic = await axiosAuth.get(
+                        `users/isPublicUser/${responseUser.data.id}`,
+                    );
+                    setIsLoading(false);
+                    if (isPublic.data) {
+                        setIsLoading(true);
+                        const responseMovie = await axiosAuth.get(
+                            `/movies/${responseUser.data.id}`,
+                        );
+                        const responseSerie = await axiosAuth.get(
+                            `/series/${responseUser.data.id}`,
+                        );
+                        setIsLoading(false);
+                        setDatabaseMovies(responseMovie.data);
+                        setDatabaseSeries(responseSerie.data);
+                    } else {
+                        toast.error('O usuário não existe ou está privado');
+                        navigate('/');
+                    }
+                }
             } catch (e) {
                 const errors = get(e, 'response.data.errors', []);
                 const status = get(e, 'response.status', 0);
                 if (status === 400) {
                     errors.map((error) => toast.error(error));
-                    history.push('/');
+                    navigate('/');
                 }
             }
         };
@@ -68,7 +104,7 @@ export default function WatchList() {
             const status = get(e, 'response.status', 0);
             if (status === 400) {
                 errors.map((error) => toast.error(error));
-                history.push('/');
+                navigate('/');
             }
         }
     };
@@ -103,27 +139,21 @@ export default function WatchList() {
             const status = get(e, 'response.status', 0);
             if (status === 400) {
                 errors.map((error) => toast.error(error));
-                history.push('/');
+                navigate('/');
             }
         }
     };
 
     useEffect(() => {
         databaseMovies.forEach((movie) => {
-            const movieId = movie.movie_id;
-            if (movieId) {
-                addMovie(movieId);
-            } else {
-                console.log('ID do filme ausente para:', movie);
+            if (movie.movie_id && !movieImages[movie.movie_id]) {
+                addMovie(movie.movie_id);
             }
         });
 
         databaseSeries.forEach((serie) => {
-            const serieId = serie.serie_id;
-            if (serieId) {
-                addSerie(serieId);
-            } else {
-                console.log('ID da série ausente para:', serie);
+            if (serie.serie_id && !serieImages[serie.serie_id]) {
+                addSerie(serie.serie_id);
             }
         });
     }, [databaseMovies, databaseSeries]);

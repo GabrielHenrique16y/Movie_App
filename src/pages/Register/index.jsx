@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Cookies from 'js-cookie';
 
-import { RegisterContainer, Form } from './styled';
+import { SwitchContainer, RegisterContainer, Form } from './styled';
 import * as actions from '../../store/modules/Auth/actions';
 import { Link, useNavigate } from 'react-router-dom';
 import Loading from '../../components/Loading';
@@ -24,6 +24,7 @@ export default function Register() {
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isPublic, setIsPublic] = useState(false);
 
     const togglePassword = () => {
         const passwordInput = document.getElementById('passwordInput');
@@ -46,6 +47,7 @@ export default function Register() {
 
         setNome(nomeStored);
         setEmail(emailStored);
+        setIsPublic(user?.public || false)
     }, [id, nomeStored, emailStored]);
 
     async function handleSubmit(e) {
@@ -69,17 +71,19 @@ export default function Register() {
 
         if (formError) return;
 
-        dispatch(actions.registerRequest({ nome, email, password, navigate }));
+        dispatch(actions.registerRequest({ nome, email, password, isPublic, navigate }));
     }
 
     return (
-        <div style={{
-            backgroundColor: '#f5f5f5', 
-            minHeight: '100vh', 
-            display: 'flex', 
-            justifyContent: 'center'
-        }}>
-            <Loading isLoading={isLoading}/>
+        <div
+            style={{
+                backgroundColor: '#f5f5f5',
+                minHeight: '100vh',
+                display: 'flex',
+                justifyContent: 'center',
+            }}
+        >
+            <Loading isLoading={isLoading} />
             <RegisterContainer>
                 <h1>{id ? 'Editar perfil' : 'Cria conta'}</h1>
                 <Form onSubmit={handleSubmit}>
@@ -139,12 +143,31 @@ export default function Register() {
                             display={'none'}
                         />
                     </label>
+                    {id && (
+                        <div className="toggle-container">
+                            <SwitchContainer>
+                                <span>Tornar perfil público</span>
+                                <div className="switch">
+                                    <input
+                                        type="checkbox"
+                                        id="publicProfile"
+                                        checked={isPublic}
+                                        onChange={() => setIsPublic(!isPublic)}
+                                    />
+                                    <span className="slider"></span>
+                                </div>
+                            </SwitchContainer>
+                            <p className="warn-text">
+                                Aviso: Se seu perfil for público, qualquer
+                                pessoa poderá ver sua WatchList.
+                            </p>
+                        </div>
+                    )}
+
                     <button type="submit">
-                        {id ? 'Editar conta' : 'Cria conta'}
+                        {id ? 'Editar conta' : 'Criar conta'}
                     </button>
-                    {id ? (
-                        ''
-                    ) : (
+                    {!id && (
                         <Link to={'/login'}>
                             Already have an account? Sign In
                         </Link>

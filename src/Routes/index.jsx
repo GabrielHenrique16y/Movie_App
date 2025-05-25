@@ -12,6 +12,7 @@ import Actor from '../pages/Actor';
 import Login from '../pages/Login';
 import WatchList from '../pages/WatchList';
 import Register from '../pages/Register';
+import List from '../pages/Users/List';
 
 export default function AppRoutes() {
     return (
@@ -35,15 +36,6 @@ export default function AppRoutes() {
             />
 
             <Route
-                path="actor/:id"
-                element={
-                    <MyRoute IsClosed={false}>
-                        <Actor />
-                    </MyRoute>
-                }
-            />
-
-            <Route
                 path="/series"
                 element={
                     <MyRoute IsClosed={false}>
@@ -57,6 +49,15 @@ export default function AppRoutes() {
                 element={
                     <MyRoute IsClosed={false}>
                         <Serie />
+                    </MyRoute>
+                }
+            />
+
+            <Route
+                path="actor/:id"
+                element={
+                    <MyRoute IsClosed={false}>
+                        <Actor />
                     </MyRoute>
                 }
             />
@@ -80,10 +81,19 @@ export default function AppRoutes() {
             />
 
             <Route
-                path="watchList/"
+                path="watchList/:name?"
                 element={
                     <MyRoute IsClosed={true}>
                         <WatchList />
+                    </MyRoute>
+                }
+            />
+
+            <Route
+                path="users/"
+                element={
+                    <MyRoute IsClosed={false}>
+                        <List />
                     </MyRoute>
                 }
             />

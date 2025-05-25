@@ -118,12 +118,15 @@ export default function Serie() {
             toast.success('Successfully removed to Watchlist');
             navigate('/watchList');
         } catch (e) {
-const errors = get(e, 'response.data.errors', []);
+            const errors = get(e, 'response.data.errors', []);
             const status = get(e, 'response.status', 0);
             if (status === 400) {
                 errors.map((error) => toast.error(error));
                 history.push('/');
-            }        }
+            }
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     useEffect(() => {
