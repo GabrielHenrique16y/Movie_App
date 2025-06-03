@@ -12,5 +12,5 @@ jobs:
     steps:
       - name: Ping Supabase "Movie" endpoint
         run: |
-          curl -s -o /dev/null -w "%{http_code}" "https://raoshatvuutmmiftxyvc.supabase.co/rest/v1/Games?limit=1" \
+          curl -s -o /dev/null -w "%{http_code}" "https://raoshatvuutmmiftxyvc.supabase.co/rest/v1/Movie?limit=1" \
           -H "apikey: ${{ secrets.SUPABASE_API_KEY }}"
